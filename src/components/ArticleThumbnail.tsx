@@ -84,35 +84,40 @@ export function ArticleThumbnail({
     >
       {/* Fallback (never leaves card empty): gradient + publisher logo + source name below */}
       <div
-        className={`absolute inset-0 w-full h-full bg-gradient-to-br ${gradient.from} ${gradient.to} flex flex-col items-center justify-center p-4 transition-transform duration-500`}
+        className={`absolute inset-0 w-full h-full bg-gradient-to-br ${gradient.from} ${gradient.to} flex flex-col items-center justify-center p-4 transition-opacity duration-300 ${
+          imageLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+        aria-hidden={imageLoaded}
       >
         {/* Subtle geometric dot texture */}
         <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
 
-        {/* Centered publisher logo with monogram backup */}
-        <div className="relative z-10 flex flex-col items-center justify-center">
-          {!logoError ? (
-            <div className="w-12 h-12 rounded-xl bg-white/95 dark:bg-stone-900/90 shadow-md p-1.5 flex items-center justify-center border border-white/20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`https://www.google.com/s2/favicons?domain=${domain}&sz=128`}
-                alt={source}
-                referrerPolicy="no-referrer"
-                onError={() => setLogoError(true)}
-                className="w-8 h-8 object-contain"
-              />
-            </div>
-          ) : (
-            <div className="w-12 h-12 rounded-full border border-white/25 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white font-serif font-black text-xl shadow-inner">
-              {initial}
-            </div>
-          )}
+        {/* Centered publisher logo with monogram backup (only visible while image is not loaded) */}
+        {!imageLoaded && (
+          <div className="relative flex flex-col items-center justify-center">
+            {!logoError ? (
+              <div className="w-12 h-12 rounded-xl bg-white/95 dark:bg-stone-900/90 shadow-md p-1.5 flex items-center justify-center border border-white/20">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://www.google.com/s2/favicons?domain=${domain}&sz=128`}
+                  alt={source}
+                  referrerPolicy="no-referrer"
+                  onError={() => setLogoError(true)}
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
+            ) : (
+              <div className="w-12 h-12 rounded-full border border-white/25 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white font-serif font-black text-xl shadow-inner">
+                {initial}
+              </div>
+            )}
 
-          {/* Source name centered below */}
-          <span className="mt-2.5 text-xs font-mono tracking-wider uppercase text-white/90 font-medium truncate max-w-[90%] text-center shadow-xs">
-            {source}
-          </span>
-        </div>
+            {/* Source name centered below */}
+            <span className="mt-2.5 text-xs font-mono tracking-wider uppercase text-white/90 font-medium truncate max-w-[90%] text-center shadow-xs">
+              {source}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Real article thumbnail (faded in on load) */}
@@ -125,8 +130,8 @@ export function ArticleThumbnail({
           referrerPolicy="no-referrer"
           onLoad={() => setImageLoaded(true)}
           onError={() => setHasError(true)}
-          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-103 ${
-            imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
+          className={`absolute inset-0 w-full h-full object-cover z-10 transition-all duration-500 group-hover:scale-103 ${
+            imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105 pointer-events-none"
           }`}
         />
       )}
