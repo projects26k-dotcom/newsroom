@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dispatch — Live News Wire
 
-## Getting Started
+A clean, minimal, and authoritative personal news website built with **Next.js 14+ (App Router)**, **TypeScript**, and **Tailwind CSS**. It streams real-time headlines and dispatches directly from **Google News RSS** with zero database, zero logins, and zero API keys required.
 
-First, run the development server:
+## Key Architectural Principles
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Zero Fake News Fallbacks**: If feeds fail, an honest, transparent editorial notice is shown. No fake or hardcoded news is ever shown.
+- **Dynamic Server-Side Ingestion**: Calls Google News RSS strictly on the server—never from the browser—with Next.js cache revalidation (`revalidate = 300`).
+- **Parallel Resilient Fetching**: Queries multiple Google News RSS feeds in parallel using `Promise.allSettled`, gracefully skipping any feed that fails.
+- **Intelligent Google News Parsing**:
+  - Automatically strips `" - <Source>"` suffix from titles and uses the `<source>` tag for accurate publisher attribution.
+  - Parses `<description>` HTML with Cheerio to extract up to 3 related articles with links and source tags as "More coverage".
+  - Directly uses Google redirect URLs with `target="_blank" rel="noopener noreferrer"`.
+  - Converts publication dates to readable relative time ("12m ago", "1h ago").
+  - Deterministic editorial gradient placeholders with source monograms for cards.
+- **Section Desks & Source Filtering**:
+  - Categories: India, Hindi, World, Business, Technology, Sports, Entertainment, Science, Health.
+  - Source Channels: Aaj Tak, ABP, News24, NDTV, BBC, The Hindu.
+- **Client-Side Progressive Reading**: Displays 24 articles initially and allows reading more via a snappy "Load more" button without making redundant network queries.
+
+## Project Structure
+
+```
+├── lib/
+│   ├── feeds.ts         # Google News RSS feed configurations
+│   └── news.ts          # Server-only RSS parser, Cheerio coverage extraction & deduplication
+├── src/
+│   ├── app/
+│   │   ├── page.tsx            # Front page (India Top Stories)
+│   │   ├── category/[slug]/    # Category desk routes (World, Tech, Business, etc.)
+│   │   ├── source/[slug]/      # Source channel routes (Aaj Tak, NDTV, BBC, etc.)
+│   │   ├── search/             # Google News RSS live search
+│   │   ├── loading.tsx         # Skeleton loading states
+│   │   └── layout.tsx          # Root layout & Dispatch masthead
+│   └── components/
+│       ├── ArticleCard.tsx     # Editorial card with gradient monogram & More Coverage
+│       ├── ArticleList.tsx     # 24-article initial display with Load More
+│       ├── CategoryNav.tsx     # Category tabs & source filters
+│       └── Header.tsx / Footer.tsx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Running Locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy directly to Vercel with zero configuration required.
