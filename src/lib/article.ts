@@ -1,10 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { JSDOM } from "jsdom";
+import { parseHTML } from "linkedom";
 import { Readability } from "@mozilla/readability";
 import sanitizeHtml from "sanitize-html";
 import { resolveGoogleNewsUrl } from "./resolve";
-import { cleanDomain, getPublisherDomain } from "./utils";
+import { cleanDomain } from "./utils";
+export { encodeArticleId, decodeArticleId } from "./encoder";
 
 export interface ExtractedArticle {
   title: string;
@@ -20,28 +21,6 @@ export interface ExtractedArticle {
   isFallback: boolean;
   fallbackReason?: string | null;
   googleUrl: string;
-}
-
-export function encodeArticleId(url: string): string {
-  if (typeof Buffer !== "undefined") {
-    return Buffer.from(url, "utf-8").toString("base64url");
-  }
-  return btoa(encodeURIComponent(url))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
-
-export function decodeArticleId(id: string): string {
-  try {
-    if (typeof Buffer !== "undefined") {
-      return Buffer.from(id, "base64url").toString("utf-8");
-    }
-    const b64 = id.replace(/-/g, "+").replace(/_/g, "/");
-    return decodeURIComponent(atob(b64));
-  } catch {
-    return "";
-  }
 }
 
 const CACHE_DIR = path.join(process.cwd(), ".cache");
@@ -94,10 +73,9 @@ function scheduleSaveCache(): void {
 loadCache();
 
 /**
- * Extract lead image from HTML metadata or content
+ * Extract lead image from HTML document metadata
  */
-function extractLeadImage(dom: JSDOM, publisherUrl: string): string | null {
-  const doc = dom.window.document;
+function extractLeadImage(doc: any, publisherUrl: string): string | null {
   const candidates = [
     doc.querySelector('meta[property="og:image"]')?.getAttribute("content"),
     doc.querySelector('meta[name="og:image"]')?.getAttribute("content"),
@@ -127,10 +105,9 @@ function extractLeadImage(dom: JSDOM, publisherUrl: string): string | null {
 }
 
 /**
- * Extract publish date from metadata or document
+ * Extract publish date from document metadata
  */
-function extractPublishDate(dom: JSDOM): string | null {
-  const doc = dom.window.document;
+function extractPublishDate(doc: any): string | null {
   const candidates = [
     doc.querySelector('meta[property="article:published_time"]')?.getAttribute("content"),
     doc.querySelector('meta[name="publish-date"]')?.getAttribute("content"),
@@ -220,7 +197,7 @@ function sanitizeArticleHtml(rawHtml: string, publisherUrl: string): string {
 }
 
 /**
- * Fetch and extract article in Reader Mode with 1-hour cache and resilient fallback
+ * Fetch and extract article in Reader Mode using linkedom and Readability
  */
 export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArticle> {
   const now = Date.now();
@@ -314,23 +291,23 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
     return fallbackArticle;
   }
 
-  // Step 3: Parse with JSDOM and Readability
+  // Step 3: Parse with linkedom and Readability
   try {
-    const dom = new JSDOM(html, { url: publisherUrl });
-    const leadImage = extractLeadImage(dom, publisherUrl);
-    const publishDate = extractPublishDate(dom);
+    const { document } = parseHTML(html);
+    const leadImage = extractLeadImage(document, publisherUrl);
+    const publishDate = extractPublishDate(document);
 
     const ogTitle =
-      dom.window.document.querySelector('meta[property="og:title"]')?.getAttribute("content") ||
-      dom.window.document.querySelector("title")?.textContent ||
+      document.querySelector('meta[property="og:title"]')?.getAttribute("content") ||
+      document.querySelector("title")?.textContent ||
       "";
 
     const ogDescription =
-      dom.window.document.querySelector('meta[property="og:description"]')?.getAttribute("content") ||
-      dom.window.document.querySelector('meta[name="description"]')?.getAttribute("content") ||
+      document.querySelector('meta[property="og:description"]')?.getAttribute("content") ||
+      document.querySelector('meta[name="description"]')?.getAttribute("content") ||
       "";
 
-    const reader = new Readability(dom.window.document);
+    const reader = new Readability(document);
     const parsed = reader.parse();
 
     const title = (parsed?.title || ogTitle || "News Dispatch").trim();

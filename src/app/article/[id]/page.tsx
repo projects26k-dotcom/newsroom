@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ExternalLink, Clock, User, ShieldAlert, Sparkles } from "lucide-react";
-import { getArticleByUrl, decodeArticleId } from "@/lib/article";
 import { BackButton } from "@/components/BackButton";
 import { getGradientFromText } from "@/lib/utils";
 
+export const runtime = "nodejs";
 export const revalidate = 3600;
 
 interface ArticlePageProps {
@@ -13,10 +13,12 @@ interface ArticlePageProps {
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { id } = await params;
+  const { decodeArticleId } = await import("@/lib/encoder");
   const googleUrl = decodeArticleId(id);
   if (!googleUrl) {
     return { title: "Dispatch Reader" };
   }
+  const { getArticleByUrl } = await import("@/lib/article");
   const article = await getArticleByUrl(googleUrl);
   return {
     title: `${article.title} — Dispatch`,
@@ -26,12 +28,15 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { id } = await params;
+  const { decodeArticleId } = await import("@/lib/encoder");
   const googleUrl = decodeArticleId(id);
 
   if (!googleUrl) {
     notFound();
   }
 
+  // Dynamic import so linkedom & Readability are loaded strictly on demand in /article/[id]
+  const { getArticleByUrl } = await import("@/lib/article");
   const article = await getArticleByUrl(googleUrl);
   const initial = (article.sourceName[0] || "D").toUpperCase();
   const gradient = getGradientFromText(article.sourceName || "Dispatch");

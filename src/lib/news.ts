@@ -2,7 +2,7 @@ import "server-only";
 import Parser from "rss-parser";
 import * as cheerio from "cheerio";
 import { FeedConfig } from "./feeds";
-import { encodeArticleId } from "./article";
+import { encodeArticleId } from "./encoder";
 
 export interface RelatedArticle {
   title: string;

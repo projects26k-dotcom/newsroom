@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getThumbnailDetails } from "@/lib/thumb";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
