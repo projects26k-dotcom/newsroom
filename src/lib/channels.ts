@@ -28,6 +28,7 @@ export interface ChannelConfig {
   youtubeChannelId: string;
   youtubeHandle: string;
   liveVideoId?: string;
+  defaultLiveVideoId?: string;
 }
 
 export interface ResolvedChannel extends ChannelConfig {
@@ -42,6 +43,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UCt4t-jeY85JegMlZ-E5UWtA",
     youtubeHandle: "@aajtak",
     liveVideoId: "",
+    defaultLiveVideoId: "D60lJ8EpyfA",
   },
   {
     name: "ABP News",
@@ -50,6 +52,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UCRWFSbif-RFENbBrSiez1DA",
     youtubeHandle: "@abpnews",
     liveVideoId: "",
+    defaultLiveVideoId: "U3Vk0XQo1qg",
   },
   {
     name: "News24",
@@ -58,6 +61,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UCuzS3rPQAYqHcLWqOFuY0pw",
     youtubeHandle: "@news24thinkfirst",
     liveVideoId: "",
+    defaultLiveVideoId: "HJjkWyatE4o",
   },
   {
     name: "NDTV India",
@@ -66,6 +70,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UC9CYT9gSNLevX5ey2_6CK0Q",
     youtubeHandle: "@ndtvindia",
     liveVideoId: "",
+    defaultLiveVideoId: "jDfgpi42pFY",
   },
   {
     name: "NDTV (English)",
@@ -74,6 +79,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UCZFMm1mMw0F81Z37aaEzTUA",
     youtubeHandle: "@NDTV",
     liveVideoId: "",
+    defaultLiveVideoId: "yixzu2D0CIM",
   },
   {
     name: "BBC News",
@@ -82,6 +88,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UC16niRr50-MSBwiO3YDb3RA",
     youtubeHandle: "@BBCNews",
     liveVideoId: "",
+    defaultLiveVideoId: "zzdQU1JVpIQ",
   },
   {
     name: "Al Jazeera English",
@@ -90,6 +97,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UCNye-wNBqNL5ZzHSJj3l8Bg",
     youtubeHandle: "@aljazeeraenglish",
     liveVideoId: "",
+    defaultLiveVideoId: "gCNeDWCI0vo",
   },
   {
     name: "WION",
@@ -98,6 +106,7 @@ export const CHANNELS: ChannelConfig[] = [
     youtubeChannelId: "UC_gUM8rL-Lrg6O3adPW9K1g",
     youtubeHandle: "@WION",
     liveVideoId: "",
+    defaultLiveVideoId: "_-Ybm_mhlGQ",
   },
 ];
 

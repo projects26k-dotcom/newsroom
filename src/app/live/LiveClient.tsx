@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ResolvedChannel } from "@/lib/channels";
 import { LiveVideoResult } from "@/lib/youtubeLive";
-import { ExternalLink, Radio, Tv, AlertCircle, Loader2 } from "lucide-react";
+import { ExternalLink, Radio, Tv, AlertCircle, Loader2, RefreshCw } from "lucide-react";
 
 interface LiveClientProps {
   channels: ResolvedChannel[];
@@ -63,8 +63,8 @@ export function LiveClient({
     }
   }, [selectedSlug, initialSlug]);
 
-  const handleSelectChannel = async (slug: string) => {
-    if (slug === selectedSlug) return;
+  const handleSelectChannel = async (slug: string, force = false) => {
+    if (slug === selectedSlug && !force) return;
 
     setSelectedSlug(slug);
     setIsLoading(true);
@@ -171,15 +171,25 @@ export function LiveClient({
                   You can watch the official live broadcast directly on YouTube.
                 </p>
 
-                <a
-                  href={directLiveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-lg hover:shadow-red-900/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                >
-                  <span>Watch on YouTube</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectChannel(selectedSlug, true)}
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all border border-stone-700 shadow-md hover:text-white"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Retry Stream</span>
+                  </button>
+                  <a
+                    href={directLiveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-lg hover:shadow-red-900/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  >
+                    <span>Watch on YouTube</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
             </div>
           )}
