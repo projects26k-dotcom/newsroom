@@ -13,6 +13,8 @@
  * 4. If `youtubeChannelId` is left as an empty string (""), the system automatically
  *    fetches https://www.youtube.com/<handle> server-side, extracts the channel ID,
  *    and caches it in /tmp for 7 days.
+ * 5. To manually force a specific YouTube live stream video ID (e.g. for special broadcasts),
+ *    paste the 11-character video ID into the optional `liveVideoId` field.
  * ============================================================================
  */
 
@@ -25,6 +27,7 @@ export interface ChannelConfig {
   language: "en" | "hi";
   youtubeChannelId: string;
   youtubeHandle: string;
+  liveVideoId?: string;
 }
 
 export interface ResolvedChannel extends ChannelConfig {
@@ -36,57 +39,65 @@ export const CHANNELS: ChannelConfig[] = [
     name: "Aaj Tak",
     slug: "aajtak",
     language: "hi",
-    youtubeChannelId: "",
+    youtubeChannelId: "UCt4t-jeY85JegMlZ-E5UWtA",
     youtubeHandle: "@aajtak",
+    liveVideoId: "",
   },
   {
     name: "ABP News",
     slug: "abp-news",
     language: "hi",
-    youtubeChannelId: "",
+    youtubeChannelId: "UCRWFSbif-RFENbBrSiez1DA",
     youtubeHandle: "@abpnews",
+    liveVideoId: "",
   },
   {
     name: "News24",
     slug: "news24",
     language: "hi",
-    youtubeChannelId: "",
+    youtubeChannelId: "UCuzS3rPQAYqHcLWqOFuY0pw",
     youtubeHandle: "@news24thinkfirst",
+    liveVideoId: "",
   },
   {
     name: "NDTV India",
     slug: "ndtv-india",
     language: "hi",
-    youtubeChannelId: "",
+    youtubeChannelId: "UC9CYT9gSNLevX5ey2_6CK0Q",
     youtubeHandle: "@ndtvindia",
+    liveVideoId: "",
   },
   {
     name: "NDTV (English)",
     slug: "ndtv-english",
     language: "en",
-    youtubeChannelId: "",
+    youtubeChannelId: "UCZFMm1mMw0F81Z37aaEzTUA",
     youtubeHandle: "@NDTV",
+    liveVideoId: "",
   },
   {
     name: "BBC News",
     slug: "bbc-news",
     language: "en",
-    youtubeChannelId: "",
+    youtubeChannelId: "UC16niRr50-MSBwiO3YDb3RA",
     youtubeHandle: "@BBCNews",
+    liveVideoId: "",
   },
   {
     name: "Al Jazeera English",
     slug: "al-jazeera-english",
     language: "en",
-    youtubeChannelId: "",
+    youtubeChannelId: "UCNye-wNBqNL5ZzHSJj3l8Bg",
     youtubeHandle: "@aljazeeraenglish",
+    liveVideoId: "",
   },
   {
     name: "WION",
     slug: "wion",
     language: "en",
-    youtubeChannelId: "",
+    youtubeChannelId: "UC_gUM8rL-Lrg6O3adPW9K1g",
     youtubeHandle: "@WION",
+    liveVideoId: "",
   },
 ];
 
