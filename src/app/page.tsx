@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 import { getNews } from "@/lib/news";
 import { FEEDS } from "@/lib/feeds";
+import { getLatestVideos } from "@/lib/videos";
 import { ArticleList } from "@/components/ArticleList";
+import { LatestVideosRow } from "@/components/LatestVideosRow";
 import { ErrorNotice } from "@/components/ErrorNotice";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +16,11 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const indiaFeed = FEEDS.find((f) => f.id === "india") || FEEDS[0];
-  const { articles, error } = await getNews([indiaFeed]);
+
+  const [{ articles, error }, latestVideos] = await Promise.all([
+    getNews([indiaFeed]),
+    getLatestVideos(6).catch(() => []),
+  ]);
 
   if (error || !articles || articles.length === 0) {
     return (
@@ -44,6 +50,11 @@ export default async function HomePage() {
 
       {/* 24 articles first + client-side load more */}
       <ArticleList articles={articles} showFeatured={true} initialBatchSize={24} batchIncrement={24} />
+
+      {/* Latest Videos Section */}
+      {latestVideos && latestVideos.length > 0 && (
+        <LatestVideosRow videos={latestVideos} />
+      )}
     </div>
   );
 }

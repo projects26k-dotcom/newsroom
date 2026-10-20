@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, BookOpen, Layers } from "lucide-react";
+import { Clock, BookOpen, Layers, Play } from "lucide-react";
 import { Article } from "@/lib/news";
 import { ArticleThumbnail } from "./ArticleThumbnail";
 
@@ -29,6 +29,14 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           immediate={false}
           aspectClass="aspect-[16/9]"
         />
+
+        {/* Video badge if article contains a video */}
+        {article.hasVideo && (
+          <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-xs text-white text-[11px] font-semibold flex items-center gap-1 z-20 shadow-sm border border-white/10">
+            <Play className="w-2.5 h-2.5 fill-red-500 text-red-500" />
+            <span>Video</span>
+          </div>
+        )}
 
         {/* Reader Mode hint pill */}
         <div className="absolute top-3 right-3 p-1.5 rounded-full bg-black/50 backdrop-blur-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm z-20">

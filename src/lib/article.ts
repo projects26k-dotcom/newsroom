@@ -21,9 +21,11 @@ export interface ExtractedArticle {
   isFallback: boolean;
   fallbackReason?: string | null;
   googleUrl: string;
+  youtubeVideoId?: string | null;
+  directVideoUrl?: string | null;
 }
 
-const CACHE_DIR = path.join(process.cwd(), ".cache");
+const CACHE_DIR = path.join("/tmp", "newsroom-cache");
 const CACHE_FILE = path.join(CACHE_DIR, "articles.json");
 const CACHE_TTL = 3600 * 1000; // 1 hour
 
@@ -134,7 +136,74 @@ function extractPublishDate(doc: any): string | null {
 }
 
 /**
- * Sanitize Readability HTML content
+ * Extract YouTube video ID from various URL patterns
+ */
+export function extractYouTubeId(url: string | null | undefined): string | null {
+  if (!url || typeof url !== "string") return null;
+  const match = url.match(
+    /(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/
+  );
+  return match ? match[1] : null;
+}
+
+/**
+ * Extract YouTube or direct video embed info from document
+ */
+function extractVideoInfo(doc: any): { youtubeVideoId: string | null; directVideoUrl: string | null } {
+  try {
+    // 1. Check iframes in document
+    const iframes = doc.querySelectorAll("iframe");
+    for (const iframe of iframes) {
+      const src = iframe.getAttribute("src") || iframe.getAttribute("data-src") || "";
+      const ytId = extractYouTubeId(src);
+      if (ytId) {
+        return { youtubeVideoId: ytId, directVideoUrl: null };
+      }
+    }
+
+    // 2. Check og:video metadata
+    const ogVideoCandidates = [
+      doc.querySelector('meta[property="og:video"]')?.getAttribute("content"),
+      doc.querySelector('meta[property="og:video:url"]')?.getAttribute("content"),
+      doc.querySelector('meta[property="og:video:secure_url"]')?.getAttribute("content"),
+      doc.querySelector('meta[name="twitter:player"]')?.getAttribute("content"),
+    ];
+
+    for (const candidate of ogVideoCandidates) {
+      if (!candidate || typeof candidate !== "string") continue;
+      const trimmed = candidate.trim();
+      const ytId = extractYouTubeId(trimmed);
+      if (ytId) {
+        return { youtubeVideoId: ytId, directVideoUrl: null };
+      }
+      if (
+        trimmed.startsWith("https://") &&
+        (trimmed.toLowerCase().includes(".mp4") || trimmed.toLowerCase().includes("video/mp4"))
+      ) {
+        return { youtubeVideoId: null, directVideoUrl: trimmed };
+      }
+    }
+
+    // 3. Check anchor links to youtube.com/watch or youtu.be
+    const links = doc.querySelectorAll("a[href]");
+    for (const link of links) {
+      const href = link.getAttribute("href") || "";
+      if (href.includes("youtube.com/watch") || href.includes("youtu.be/")) {
+        const ytId = extractYouTubeId(href);
+        if (ytId) {
+          return { youtubeVideoId: ytId, directVideoUrl: null };
+        }
+      }
+    }
+  } catch {
+    // Graceful fallback
+  }
+
+  return { youtubeVideoId: null, directVideoUrl: null };
+}
+
+/**
+ * Sanitize Readability HTML content - allows ONLY youtube-nocookie.com iframes
  */
 function sanitizeArticleHtml(rawHtml: string, publisherUrl: string): string {
   return sanitizeHtml(rawHtml, {
@@ -152,11 +221,14 @@ function sanitizeArticleHtml(rawHtml: string, publisherUrl: string): string {
       "img",
       "figure",
       "figcaption",
+      "iframe",
     ],
     allowedAttributes: {
       a: ["href", "target", "rel"],
       img: ["src", "alt", "width", "height", "loading", "referrerpolicy"],
+      iframe: ["src", "width", "height", "frameborder", "allow", "allowfullscreen", "title"],
     },
+    allowedIframeHostnames: ["www.youtube-nocookie.com", "youtube-nocookie.com"],
     transformTags: {
       a: (tagName, attribs) => {
         let href = attribs.href || "";
@@ -190,6 +262,37 @@ function sanitizeArticleHtml(rawHtml: string, publisherUrl: string): string {
             loading: "lazy",
             referrerpolicy: "no-referrer",
           },
+        };
+      },
+      iframe: (tagName, attribs) => {
+        const src = attribs.src || "";
+        const ytId = extractYouTubeId(src);
+        if (ytId) {
+          return {
+            tagName: "iframe",
+            attribs: {
+              ...attribs,
+              src: `https://www.youtube-nocookie.com/embed/${ytId}`,
+              frameborder: "0",
+              allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+              allowfullscreen: "true",
+              class: "aspect-video w-full rounded-xl my-4",
+            },
+          };
+        }
+        if (src.startsWith("https://www.youtube-nocookie.com/embed/")) {
+          return {
+            tagName: "iframe",
+            attribs: {
+              ...attribs,
+              src,
+              class: "aspect-video w-full rounded-xl my-4",
+            },
+          };
+        }
+        return {
+          tagName: "span",
+          attribs: { class: "hidden" },
         };
       },
     },
@@ -316,6 +419,8 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
     const textContent = parsed?.textContent?.trim() || "";
     const charCount = textContent.length;
 
+    const videoInfo = extractVideoInfo(document);
+
     // Check if extraction succeeded and has at least 300 characters
     if (!parsed || !parsed.content || charCount < 300) {
       console.log(
@@ -334,6 +439,8 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
         isFallback: true,
         fallbackReason: "Full text isn't available here",
         googleUrl,
+        youtubeVideoId: videoInfo.youtubeVideoId,
+        directVideoUrl: videoInfo.directVideoUrl,
       };
       memoryCache.set(googleUrl, { article: fallbackArticle, timestamp: now });
       scheduleSaveCache();
@@ -358,6 +465,8 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
       charCount,
       isFallback: false,
       googleUrl,
+      youtubeVideoId: videoInfo.youtubeVideoId,
+      directVideoUrl: videoInfo.directVideoUrl,
     };
 
     memoryCache.set(googleUrl, { article: articleResult, timestamp: now });

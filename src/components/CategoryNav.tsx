@@ -27,13 +27,19 @@ export function CategoryNav() {
                 key={tab.id}
                 href={tab.href}
                 prefetch={false}
-                className={`relative shrink-0 px-3 py-1.5 rounded-md transition-all duration-200 ${
+                className={`relative shrink-0 px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5 ${
                   isActive
                     ? "text-red-700 dark:text-red-400 font-bold bg-red-50/90 dark:bg-red-950/40"
                     : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850"
                 }`}
               >
-                {tab.name}
+                {tab.id === "live" && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                  </span>
+                )}
+                <span>{tab.name}</span>
                 {isActive && (
                   <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-red-700 dark:bg-red-500 rounded-full" />
                 )}

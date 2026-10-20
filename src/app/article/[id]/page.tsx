@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ExternalLink, Clock, User, ShieldAlert, Sparkles } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
+import { LazyVideoPlayer } from "@/components/LazyVideoPlayer";
 import { getGradientFromText } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -109,8 +110,29 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </div>
       </header>
 
-      {/* Hero Lead Image */}
-      {article.leadImage ? (
+      {/* Video Player or Hero Lead Image */}
+      {article.youtubeVideoId ? (
+        <div className="mb-10 rounded-2xl overflow-hidden border border-stone-200/80 dark:border-stone-800 shadow-md">
+          <LazyVideoPlayer
+            videoId={article.youtubeVideoId}
+            title={article.title}
+            thumbnailUrl={article.leadImage || undefined}
+            channelName={article.sourceName}
+          />
+        </div>
+      ) : article.directVideoUrl ? (
+        <div className="mb-10 rounded-2xl overflow-hidden border border-stone-200/80 dark:border-stone-800 bg-black shadow-md aspect-[16/9]">
+          <video
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full h-full object-contain"
+            src={article.directVideoUrl}
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      ) : article.leadImage ? (
         <div className="mb-10 rounded-2xl overflow-hidden border border-stone-200/80 dark:border-stone-800 bg-stone-100 dark:bg-stone-900 shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

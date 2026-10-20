@@ -12,6 +12,8 @@ export interface FeedConfig {
 export const CATEGORY_TABS = [
   { id: "india", name: "India", href: "/" },
   { id: "hindi", name: "Hindi", href: "/category/hindi" },
+  { id: "live", name: "Live", href: "/live", isLive: true },
+  { id: "videos", name: "Videos", href: "/videos" },
   { id: "world", name: "World", href: "/category/world" },
   { id: "business", name: "Business", href: "/category/business" },
   { id: "technology", name: "Technology", href: "/category/technology" },

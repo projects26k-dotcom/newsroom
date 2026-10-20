@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, BookOpen, Flame, Layers } from "lucide-react";
+import { Clock, BookOpen, Flame, Layers, Play } from "lucide-react";
 import { Article } from "@/lib/news";
 import { ArticleThumbnail } from "./ArticleThumbnail";
 
@@ -31,6 +31,14 @@ export function FeaturedArticle({ article }: FeaturedArticleProps) {
             <Flame className="w-3.5 h-3.5 fill-white" />
             <span>Lead Story</span>
           </div>
+
+          {/* Video Badge */}
+          {article.hasVideo && (
+            <div className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-xs text-white text-xs font-semibold shadow-md z-20 border border-white/10">
+              <Play className="w-3 h-3 fill-red-500 text-red-500" />
+              <span>Video Dispatch</span>
+            </div>
+          )}
         </Link>
 
         {/* Content Side - 5 cols on large screens */}

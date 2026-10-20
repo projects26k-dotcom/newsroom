@@ -23,6 +23,7 @@ export interface Article {
   related: RelatedArticle[];
   category?: string;
   language?: string;
+  hasVideo?: boolean;
 }
 
 
@@ -205,6 +206,22 @@ async function fetchSingleFeed(feed: FeedConfig): Promise<Article[]> {
 
       const articleId = encodeArticleId(item.link || "");
 
+      const titleLower = (item.title || "").toLowerCase();
+      const linkLower = (item.link || "").toLowerCase();
+      const descLower = (item.description || "").toLowerCase();
+      const hasVideo =
+        titleLower.includes("[video]") ||
+        titleLower.includes("(video)") ||
+        titleLower.includes("video:") ||
+        titleLower.includes("watch:") ||
+        titleLower.includes("वीडियो") ||
+        linkLower.includes("/video/") ||
+        linkLower.includes("/videos/") ||
+        linkLower.includes("youtube.com") ||
+        linkLower.includes("youtu.be") ||
+        descLower.includes("<iframe") ||
+        descLower.includes("youtube.com");
+
       return {
         id: item.guid || item.link || `${feed.id}-${idx}`,
         articleId,
@@ -217,6 +234,7 @@ async function fetchSingleFeed(feed: FeedConfig): Promise<Article[]> {
         related,
         category: feed.category,
         language: feed.language,
+        hasVideo,
       };
     });
   } catch (err) {

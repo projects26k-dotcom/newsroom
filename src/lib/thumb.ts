@@ -9,7 +9,7 @@ interface CacheEntry {
   timestamp: number;
 }
 
-const CACHE_DIR = path.join(process.cwd(), ".cache");
+const CACHE_DIR = path.join("/tmp", "newsroom-cache");
 const CACHE_FILE = path.join(CACHE_DIR, "thumbs.json");
 const SUCCESS_TTL = 24 * 60 * 60 * 1000; // 24 hours
 const FAILURE_TTL = 1 * 60 * 60 * 1000; // 1 hour
