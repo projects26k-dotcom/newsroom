@@ -13,10 +13,10 @@ export default function NotFound() {
           Error 404
         </span>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-          Dispatch Not Found
+          Story Not Found
         </h1>
         <p className="text-stone-500 dark:text-stone-400 text-sm sm:text-base leading-relaxed">
-          The section or dispatch you are looking for has been archived, moved, or does not exist.
+          The section or story you are looking for has been archived, moved, or does not exist.
         </p>
       </div>
 

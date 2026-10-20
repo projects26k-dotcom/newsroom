@@ -31,7 +31,7 @@ export function Header() {
               className="group inline-flex items-baseline focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600 rounded"
             >
               <span className="font-serif text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-stone-900 dark:text-white uppercase transition-colors group-hover:text-stone-700 dark:group-hover:text-stone-200">
-                Dispatch
+                Newsroom
               </span>
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 ml-1 rounded-full bg-red-700 dark:bg-red-500 inline-block" />
             </Link>
@@ -56,7 +56,7 @@ export function Header() {
               href="/videos"
               prefetch={false}
               className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-              title="Watch Video Dispatches"
+              title="Watch Videos"
             >
               <span>Videos</span>
             </Link>
@@ -64,7 +64,7 @@ export function Header() {
             <Link
               href="/search"
               prefetch={false}
-              aria-label="Search dispatches"
+              aria-label="Search stories"
               className="p-2 rounded-full text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
               title="Search news"
             >

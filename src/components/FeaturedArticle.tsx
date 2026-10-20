@@ -36,7 +36,7 @@ export function FeaturedArticle({ article }: FeaturedArticleProps) {
           {article.hasVideo && (
             <div className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-xs text-white text-xs font-semibold shadow-md z-20 border border-white/10">
               <Play className="w-3 h-3 fill-red-500 text-red-500" />
-              <span>Video Dispatch</span>
+              <span>Video Story</span>
             </div>
           )}
         </Link>
@@ -108,7 +108,7 @@ export function FeaturedArticle({ article }: FeaturedArticleProps) {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 text-xs font-semibold tracking-wide uppercase hover:bg-red-700 dark:hover:bg-red-600 dark:hover:text-white transition-colors"
             >
               <BookOpen className="w-3.5 h-3.5" />
-              <span>Read in Dispatch</span>
+              <span>Read in Newsroom</span>
             </Link>
 
             <span className="text-xs text-stone-400 dark:text-stone-500 font-mono">

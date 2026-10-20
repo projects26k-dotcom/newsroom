@@ -83,7 +83,7 @@ export function ArticleList({
             <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
           </button>
           <p className="mt-2 text-xs font-mono text-stone-400 dark:text-stone-500">
-            Showing {visibleArticles.length} of {articles.length} dispatches
+            Showing {visibleArticles.length} of {articles.length} stories
           </p>
         </div>
       )}

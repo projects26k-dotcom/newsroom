@@ -10,12 +10,12 @@ export function Footer() {
           <div className="md:col-span-5 space-y-3">
             <div className="flex items-baseline">
               <span className="font-serif text-2xl font-black tracking-tight text-stone-900 dark:text-white uppercase">
-                Dispatch
+                Newsroom
               </span>
               <span className="w-1.5 h-1.5 ml-1 rounded-full bg-red-700 dark:bg-red-500 inline-block" />
             </div>
             <p className="text-sm text-stone-500 dark:text-stone-400 max-w-sm leading-relaxed">
-              Curated real-time headlines and regional dispatches directly from Google News RSS.
+              Curated real-time headlines and regional stories directly from Google News RSS.
             </p>
           </div>
 
@@ -64,7 +64,7 @@ export function Footer() {
         {/* STEP 5: Required exact footer line */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 dark:text-stone-400 gap-4">
           <p className="font-medium text-stone-800 dark:text-stone-200">
-            Dispatch. News via Google News RSS. For personal use.
+            Newsroom. News via Google News RSS. For personal use.
           </p>
 
           <p className="font-mono text-[11px] text-stone-400 dark:text-stone-500">

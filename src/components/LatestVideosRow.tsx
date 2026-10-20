@@ -26,7 +26,7 @@ export function LatestVideosRow({ videos }: LatestVideosRowProps) {
           </div>
           <div>
             <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Latest Video Dispatches
+              Latest Video Stories
             </h2>
             <p className="text-xs text-stone-500 dark:text-stone-400">
               Fresh bulletins and reports from leading national and international desks

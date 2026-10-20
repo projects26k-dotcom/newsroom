@@ -19,13 +19,22 @@ const newsreader = Newsreader({
 
 export const metadata: Metadata = {
   title: {
-    default: "Dispatch — Live News Wire",
-    template: "%s — Dispatch",
+    default: "Newsroom — Live News Wire",
+    template: "%s",
   },
   description:
-    "A clean, minimal personal news briefing curating real-time headlines and dispatches via Google News RSS.",
-  keywords: ["news", "editorial", "Google News", "RSS", "dispatches", "world news", "India news"],
-  authors: [{ name: "Dispatch" }],
+    "A clean, minimal personal news briefing curating real-time headlines and stories via Google News RSS.",
+  keywords: ["news", "editorial", "Google News", "RSS", "stories", "world news", "India news"],
+  authors: [{ name: "Newsroom" }],
+  openGraph: {
+    title: "Newsroom — Live News Wire",
+    description: "A clean, minimal personal news briefing curating real-time headlines and stories via Google News RSS.",
+    siteName: "Newsroom",
+  },
+  twitter: {
+    title: "Newsroom — Live News Wire",
+    description: "A clean, minimal personal news briefing curating real-time headlines and stories via Google News RSS.",
+  },
 };
 
 export default function RootLayout({

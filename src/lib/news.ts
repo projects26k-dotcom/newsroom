@@ -176,7 +176,7 @@ async function fetchSingleFeed(feed: FeedConfig): Promise<Article[]> {
     let items = parsed.items || [];
 
     // For channel searches where hl=hi returns limited items for primarily English sources (e.g. The Hindu, NDTV),
-    // fetch the en-IN feed and merge to ensure readers receive the full 100 dispatches
+    // fetch the en-IN feed and merge to ensure readers receive the full 100 stories
     if (items.length < 20 && feed.url.includes("hl=hi") && feed.url.includes("site:")) {
       const enUrl = feed.url.replace("hl=hi&gl=IN&ceid=IN:hi", "hl=en-IN&gl=IN&ceid=IN:en");
       const enXml = await fetchXmlWithCache(enUrl);

@@ -16,13 +16,13 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
   const { q } = await searchParams;
   if (!q) {
     return {
-      title: "Search Dispatches — Dispatch",
-      description: "Search live headlines and dispatches across Google News RSS.",
+      title: "Search Stories — Newsroom",
+      description: "Search live headlines and stories across Google News RSS.",
     };
   }
   return {
-    title: `Search: "${q}" — Dispatch`,
-    description: `News dispatches for query "${q}" via Google News RSS.`,
+    title: `Search: "${q}" — Newsroom`,
+    description: `News stories for query "${q}" via Google News RSS.`,
   };
 }
 
@@ -40,7 +40,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {/* Search Header */}
       <div className="text-center max-w-2xl mx-auto pt-2 pb-4">
         <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50 mb-2">
-          Dispatch Search
+          Newsroom Search
         </h1>
         <p className="text-stone-500 dark:text-stone-400 text-sm sm:text-base">
           Query Google News RSS index for breaking headlines and regional reporting.
@@ -57,7 +57,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <Newspaper className="w-6 h-6" />
           </div>
           <h2 className="font-serif text-lg font-semibold text-stone-800 dark:text-stone-200 mb-1">
-            Search live dispatches
+            Search live stories
           </h2>
           <p className="text-sm text-stone-500 dark:text-stone-400 max-w-md mx-auto">
             Type keywords above to discover breaking developments and coverage from leading newsrooms.
@@ -70,7 +70,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       ) : articles.length === 0 ? (
         <div className="text-center py-16 px-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/40 max-w-xl mx-auto">
           <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">
-            No dispatches matching &ldquo;{query}&rdquo;
+            No stories matching &ldquo;{query}&rdquo;
           </h2>
           <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
             Try adjusting your search query, using broader keywords, or checking one of the section desks above.
@@ -87,7 +87,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 Results for &ldquo;{query}&rdquo;
               </h2>
               <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-850 text-stone-600 dark:text-stone-400">
-                {articles.length} dispatches
+                {articles.length} stories
               </span>
             </div>
 

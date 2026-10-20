@@ -46,7 +46,7 @@ export function SearchBar({ initialQuery = "" }: SearchBarProps) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search global dispatches, topics, companies, or events..."
+          placeholder="Search global stories, topics, companies, or events..."
           className="w-full pl-12 pr-28 py-3.5 sm:py-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-900 dark:text-white placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent text-sm sm:text-base shadow-xs transition-all"
         />
 

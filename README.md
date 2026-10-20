@@ -1,6 +1,6 @@
-# Dispatch — Live News Wire
+# Newsroom — Live News Wire
 
-A clean, minimal, and authoritative personal news website built with **Next.js 14+ (App Router)**, **TypeScript**, and **Tailwind CSS**. It streams real-time headlines and dispatches directly from **Google News RSS** with zero database, zero logins, and zero API keys required.
+A clean, minimal, and authoritative personal news website built with **Next.js 14+ (App Router)**, **TypeScript**, and **Tailwind CSS**. It streams real-time headlines and stories directly from **Google News RSS** with zero database, zero logins, and zero API keys required.
 
 ## Key Architectural Principles
 
@@ -31,7 +31,7 @@ A clean, minimal, and authoritative personal news website built with **Next.js 1
 │   │   ├── source/[slug]/      # Source channel routes (Aaj Tak, NDTV, BBC, etc.)
 │   │   ├── search/             # Google News RSS live search
 │   │   ├── loading.tsx         # Skeleton loading states
-│   │   └── layout.tsx          # Root layout & Dispatch masthead
+│   │   └── layout.tsx          # Root layout & Newsroom masthead
 │   └── components/
 │       ├── ArticleCard.tsx     # Editorial card with gradient monogram & More Coverage
 │       ├── ArticleList.tsx     # 24-article initial display with Load More

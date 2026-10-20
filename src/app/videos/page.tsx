@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 600;
 
 export const metadata: Metadata = {
-  title: "Videos — Dispatch",
+  title: "Videos — Newsroom",
   description: "Browse latest news videos, prime-time bulletins, and field reports from top channels.",
 };
 

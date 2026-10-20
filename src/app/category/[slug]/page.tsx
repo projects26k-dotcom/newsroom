@@ -18,12 +18,12 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
   if (!feed) {
     return {
-      title: "Section Not Found — Dispatch",
+      title: "Section Not Found — Newsroom",
     };
   }
 
   return {
-    title: `${feed.name} — Dispatch`,
+    title: `${feed.name} — Newsroom`,
     description: feed.tagline || `Latest ${feed.name} news and updates via Google News RSS.`,
   };
 }
@@ -66,7 +66,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
           <div className="flex items-center gap-2 text-xs font-mono text-stone-500 dark:text-stone-400">
             <span className="px-2.5 py-1 rounded-full bg-stone-100 dark:bg-stone-850">
-              {articles.length} dispatches
+              {articles.length} stories
             </span>
           </div>
         </div>

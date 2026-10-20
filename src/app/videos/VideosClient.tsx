@@ -31,7 +31,7 @@ export function VideosClient({ videos, channels }: VideosClientProps) {
           </div>
           <div>
             <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              Video Dispatches
+              Video Stories
             </h1>
             <p className="text-xs text-stone-500 dark:text-stone-400">
               Curated news bulletins and field reports from top broadcast channels
@@ -96,7 +96,7 @@ export function VideosClient({ videos, channels }: VideosClientProps) {
         </div>
       ) : (
         <div className="py-16 text-center text-stone-500 border border-dashed border-stone-300 dark:border-stone-800 rounded-2xl">
-          <p className="font-serif text-lg">No video dispatches found for this desk.</p>
+          <p className="font-serif text-lg">No video stories found for this desk.</p>
           <button
             type="button"
             onClick={() => setSelectedFilter("all")}

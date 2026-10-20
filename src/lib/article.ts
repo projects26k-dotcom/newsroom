@@ -332,7 +332,7 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
   if (publisherUrl.includes("news.google.com")) {
     console.log(`Article failed ${domain}: Resolution remained on Google News`);
     const fallbackArticle: ExtractedArticle = {
-      title: "News Dispatch",
+      title: "News Story",
       publisherUrl,
       domain,
       sourceName,
@@ -362,7 +362,7 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
     if (!res.ok) {
       console.log(`Article failed ${domain}: HTTP ${res.status}`);
       const fallbackArticle: ExtractedArticle = {
-        title: "News Dispatch",
+        title: "News Story",
         publisherUrl,
         domain,
         sourceName,
@@ -380,7 +380,7 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
   } catch (err: any) {
     console.log(`Article failed ${domain}: ${err.message || "Fetch timeout / blocked"}`);
     const fallbackArticle: ExtractedArticle = {
-      title: "News Dispatch",
+      title: "News Story",
       publisherUrl,
       domain,
       sourceName,
@@ -413,7 +413,7 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
     const reader = new Readability(document);
     const parsed = reader.parse();
 
-    const title = (parsed?.title || ogTitle || "News Dispatch").trim();
+    const title = (parsed?.title || ogTitle || "News Story").trim();
     const byline = parsed?.byline || null;
     const excerpt = (parsed?.excerpt || ogDescription || "").trim();
     const textContent = parsed?.textContent?.trim() || "";
@@ -475,7 +475,7 @@ export async function getArticleByUrl(googleUrl: string): Promise<ExtractedArtic
   } catch (err: any) {
     console.log(`Article failed ${domain}: Readability parser error (${err.message})`);
     const fallbackArticle: ExtractedArticle = {
-      title: "News Dispatch",
+      title: "News Story",
       publisherUrl,
       domain,
       sourceName,

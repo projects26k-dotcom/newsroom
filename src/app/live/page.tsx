@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Live News — Dispatch",
+  title: "Live News — Newsroom",
   description: "Watch live streaming news broadcasts from major national and international newsrooms.",
 };
 

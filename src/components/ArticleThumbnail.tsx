@@ -25,8 +25,8 @@ export function ArticleThumbnail({
   const [domain, setDomain] = useState(() => getPublisherDomain(source, articleUrl));
   const [logoError, setLogoError] = useState(false);
 
-  const initial = (source.replace(/^www\./i, "")[0] || "D").toUpperCase();
-  const gradient = getGradientFromText(source || "Dispatch");
+  const initial = (source.replace(/^www\./i, "")[0] || "N").toUpperCase();
+  const gradient = getGradientFromText(source || "Newsroom");
 
   useEffect(() => {
     let isMounted = true;

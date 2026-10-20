@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   const { decodeArticleId } = await import("@/lib/encoder");
   const googleUrl = decodeArticleId(id);
   if (!googleUrl) {
-    return { title: "Dispatch Reader" };
+    return { title: "Newsroom Reader" };
   }
   const { getArticleByUrl } = await import("@/lib/article");
   const article = await getArticleByUrl(googleUrl);
   return {
-    title: `${article.title} — Dispatch`,
+    title: `${article.title} — Newsroom`,
     description: article.excerpt || `Read ${article.title} in Reader Mode.`,
   };
 }
@@ -39,8 +39,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   // Dynamic import so linkedom & Readability are loaded strictly on demand in /article/[id]
   const { getArticleByUrl } = await import("@/lib/article");
   const article = await getArticleByUrl(googleUrl);
-  const initial = (article.sourceName[0] || "D").toUpperCase();
-  const gradient = getGradientFromText(article.sourceName || "Dispatch");
+  const initial = (article.sourceName[0] || "N").toUpperCase();
+  const gradient = getGradientFromText(article.sourceName || "Newsroom");
 
   return (
     <article className="min-h-screen py-6 sm:py-10 max-w-[760px] mx-auto px-4 sm:px-6">

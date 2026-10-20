@@ -18,13 +18,13 @@ export async function generateMetadata({ params }: SourcePageProps): Promise<Met
 
   if (!feed) {
     return {
-      title: "Source Not Found — Dispatch",
+      title: "Source Not Found — Newsroom",
     };
   }
 
   return {
-    title: `${feed.name} — Dispatch`,
-    description: `Latest dispatches from ${feed.name} via Google News RSS.`,
+    title: `${feed.name} — Newsroom`,
+    description: `Latest stories from ${feed.name} via Google News RSS.`,
   };
 }
 
@@ -66,7 +66,7 @@ export default async function SourcePage({ params }: SourcePageProps) {
 
           <div className="flex items-center gap-2 text-xs font-mono text-stone-500 dark:text-stone-400">
             <span className="px-2.5 py-1 rounded-full bg-stone-100 dark:bg-stone-850">
-              {articles.length} dispatches
+              {articles.length} stories
             </span>
           </div>
         </div>

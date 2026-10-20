@@ -10,8 +10,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "India — Dispatch",
-  description: "Top national headlines and breaking dispatches across India via Google News RSS.",
+  title: "India — Newsroom",
+  description: "Top national headlines and breaking stories across India via Google News RSS.",
 };
 
 export default async function HomePage() {
@@ -39,7 +39,7 @@ export default async function HomePage() {
             India Top Stories
           </h1>
           <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-850 text-stone-600 dark:text-stone-400">
-            {articles.length} dispatches
+            {articles.length} stories
           </span>
         </div>
 

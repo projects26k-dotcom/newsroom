@@ -41,7 +41,7 @@ export const FEEDS: FeedConfig[] = [
     url: "https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en",
     category: "india",
     language: "en",
-    tagline: "Top national headlines and breaking dispatches across India",
+    tagline: "Top national headlines and breaking stories across India",
   },
   {
     id: "hindi",
@@ -81,7 +81,7 @@ export const FEEDS: FeedConfig[] = [
     url: "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-IN&gl=IN&ceid=IN:en",
     category: "sports",
     language: "en",
-    tagline: "Tournament dispatches, athletics, cricket, and championship coverage",
+    tagline: "Tournament stories, athletics, cricket, and championship coverage",
   },
   {
     id: "entertainment",
@@ -157,7 +157,7 @@ export const FEEDS: FeedConfig[] = [
     channel: "bbc",
     domain: "bbc.com",
     language: "en",
-    tagline: "BBC News — Global perspective and comprehensive dispatches",
+    tagline: "BBC News — Global perspective and comprehensive stories",
   },
   {
     id: "thehindu",
