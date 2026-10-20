@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=600, stale-while-revalidate=120",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
         },
       }
     );

@@ -8,41 +8,62 @@ export interface LiveVideoResult {
 interface CacheEntry {
   result: LiveVideoResult | null;
   timestamp: number;
+  ttlMs: number;
 }
 
-const liveCache = new Map<string, CacheEntry>();
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const memoryCache = new Map<string, CacheEntry>();
+const SUCCESS_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const FAILURE_TTL_MS = 60 * 1000;      // 60 seconds
+
+const CHROME_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36";
 
 /**
- * Check if a YouTube video allows embedding by querying the official oEmbed API.
- * If it returns 401 or 403, embedding is restricted.
+ * Extract channelId from YouTube watch page videoDetails JSON
  */
-async function checkEmbeddable(videoId: string): Promise<boolean> {
+function extractVideoDetailsChannelId(html: string): string | null {
+  const vdMatch = html.match(/"videoDetails":\{.*?"channelId":"([^"]+)"/);
+  if (vdMatch) return vdMatch[1];
+
+  const extMatch = html.match(/"externalChannelId":"([^"]+)"/);
+  if (extMatch) return extMatch[1];
+
+  const metaMatch = html.match(/itemprop="channelId"\s+content="([^"]+)"/);
+  if (metaMatch) return metaMatch[1];
+
+  return null;
+}
+
+/**
+ * Check if video allows embedding via official oEmbed API (must return 200)
+ */
+async function checkOembed(videoId: string): Promise<boolean> {
   try {
     const res = await fetch(
       `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
       {
+        cache: "no-store",
         signal: AbortSignal.timeout(4000),
         headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+          "User-Agent": CHROME_UA,
         },
       }
     );
-
-    if (res.status === 401 || res.status === 403) {
-      return false;
-    }
-    return res.ok;
+    return res.status === 200;
   } catch {
-    // If oEmbed times out, allow embedding attempt
-    return true;
+    return false;
   }
 }
 
 /**
  * Get current live video ID and embeddability for a channel.
- * Server-side, cached 10 minutes in memory, never throws.
+ * Server-side, cached 5m on success / 60s on failure, never throws.
+ *
+ * New robust method:
+ * 1. Prefers channel.liveVideoId override if present.
+ * 2. Fetches the channel's region-independent RSS feed (videos.xml) and takes 8 newest IDs.
+ * 3. Checks each ID on watch page: requires "isLiveNow":true, channelId match, and oEmbed 200.
+ * 4. Returns newest passing video. Never picks unrelated/recommended IDs.
  */
 export async function getLiveVideoId(
   channel: ChannelConfig | ResolvedChannel
@@ -50,10 +71,10 @@ export async function getLiveVideoId(
   try {
     // 1. Manual override takes precedence if set
     if (channel.liveVideoId && channel.liveVideoId.trim().length > 0) {
-      const vid = channel.liveVideoId.trim();
-      const embeddable = await checkEmbeddable(vid);
-      console.log(`Live OK ${channel.name} ${vid} embeddable=${embeddable}`);
-      return { videoId: vid, embeddable };
+      const manualVid = channel.liveVideoId.trim();
+      const embeddable = await checkOembed(manualVid);
+      console.log(`Live OK ${channel.name} ${manualVid}`);
+      return { videoId: manualVid, embeddable };
     }
 
     // 2. Resolve YouTube channel ID
@@ -63,71 +84,112 @@ export async function getLiveVideoId(
       (await resolveChannelId(channel));
 
     if (!channelId) {
-      console.log(`Live not found ${channel.name}: channelId not found`);
+      console.log(`Live not found ${channel.name}: blocked`);
       return null;
     }
 
-    // 3. Check 10-minute in-memory cache
-    const cached = liveCache.get(channelId);
+    // 3. Check in-memory cache (5m for success, 60s for null)
+    const cached = memoryCache.get(channelId);
     const now = Date.now();
-    if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+    if (cached && now - cached.timestamp < cached.ttlMs) {
       return cached.result;
     }
 
-    // 4. Fetch https://www.youtube.com/channel/<channelId>/live
-    const liveUrl = `https://www.youtube.com/channel/${channelId}/live`;
-    const res = await fetch(liveUrl, {
-      signal: AbortSignal.timeout(6000),
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-        "Accept-Language": "en-IN,en;q=0.9",
-        Cookie: "SOCS=CAI; CONSENT=YES+1",
-      },
-    });
-
-    if (!res.ok) {
-      console.log(`Live not found ${channel.name}: HTTP ${res.status}`);
-      liveCache.set(channelId, { result: null, timestamp: now });
+    // 4. Fetch channel RSS feed (region-independent) with cache: "no-store"
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    let rssRes: Response;
+    try {
+      rssRes = await fetch(rssUrl, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(6000),
+        headers: {
+          "User-Agent": CHROME_UA,
+          Accept: "application/rss+xml, application/xml, text/xml, */*",
+        },
+      });
+    } catch {
+      console.log(`Live not found ${channel.name}: blocked`);
+      memoryCache.set(channelId, { result: null, timestamp: now, ttlMs: FAILURE_TTL_MS });
       return null;
     }
 
-    const html = await res.text();
-
-    // 5. Must contain "isLive":true or "isLiveNow":true
-    const isLive = html.includes('"isLive":true') || html.includes('"isLiveNow":true');
-    if (!isLive) {
-      console.log(`Live not found ${channel.name}: channel is not currently live`);
-      liveCache.set(channelId, { result: null, timestamp: now });
+    if (!rssRes.ok) {
+      console.log(`Live not found ${channel.name}: blocked`);
+      memoryCache.set(channelId, { result: null, timestamp: now, ttlMs: FAILURE_TTL_MS });
       return null;
     }
 
-    // 6. Read video ID from canonical link or videoId JSON pattern
-    const canonicalMatch = html.match(
-      /<link[^>]*rel="canonical"[^>]*href="https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})"/
-    );
-    let videoId = canonicalMatch ? canonicalMatch[1] : null;
-
-    if (!videoId) {
-      const vMatch = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-      if (vMatch) videoId = vMatch[1];
+    const xml = await rssRes.text();
+    const videoIds: string[] = [];
+    const matches = xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g);
+    for (const m of matches) {
+      videoIds.push(m[1]);
     }
 
-    if (!videoId) {
-      console.log(`Live not found ${channel.name}: videoId pattern not found in live page`);
-      liveCache.set(channelId, { result: null, timestamp: now });
+    // Take 8 newest video IDs
+    const candidates = videoIds.slice(0, 8);
+    if (candidates.length === 0) {
+      console.log(`Live not found ${channel.name}: not live`);
+      memoryCache.set(channelId, { result: null, timestamp: now, ttlMs: FAILURE_TTL_MS });
       return null;
     }
 
-    // 7. Verify embedding is permitted via oEmbed
-    const embeddable = await checkEmbeddable(videoId);
+    let failureReason = "not live";
 
-    console.log(`Live OK ${channel.name} ${videoId} embeddable=${embeddable}`);
-    const result: LiveVideoResult = { videoId, embeddable };
-    liveCache.set(channelId, { result, timestamp: now });
-    return result;
+    // 5. Inspect candidates in order (newest first)
+    for (const vid of candidates) {
+      try {
+        const watchUrl = `https://www.youtube.com/watch?v=${vid}`;
+        const wRes = await fetch(watchUrl, {
+          cache: "no-store",
+          signal: AbortSignal.timeout(6000),
+          headers: {
+            "User-Agent": CHROME_UA,
+            "Accept-Language": "en-IN,en;q=0.9",
+            Cookie: "SOCS=CAI; CONSENT=YES+1",
+          },
+        });
+
+        if (!wRes.ok) continue;
+
+        const html = await wRes.text();
+
+        // Check 1: Must contain "isLiveNow":true
+        const isLiveNow = html.includes('"isLiveNow":true');
+        if (!isLiveNow) {
+          continue;
+        }
+
+        // Check 2: videoDetails channelId must match this channel's youtubeChannelId
+        const pageChannelId = extractVideoDetailsChannelId(html);
+        if (pageChannelId !== channelId) {
+          failureReason = "channel mismatch";
+          continue;
+        }
+
+        // Check 3: oEmbed must return 200 (embedding allowed)
+        const embeddable = await checkOembed(vid);
+        if (!embeddable) {
+          failureReason = "not embeddable";
+          continue;
+        }
+
+        // ALL CHECKS PASSED
+        console.log(`Live OK ${channel.name} ${vid}`);
+        const result: LiveVideoResult = { videoId: vid, embeddable: true };
+        memoryCache.set(channelId, { result, timestamp: now, ttlMs: SUCCESS_TTL_MS });
+        return result;
+      } catch {
+        continue;
+      }
+    }
+
+    // None passed
+    console.log(`Live not found ${channel.name}: ${failureReason}`);
+    memoryCache.set(channelId, { result: null, timestamp: now, ttlMs: FAILURE_TTL_MS });
+    return null;
   } catch (err: any) {
-    console.log(`Live not found ${channel.name}: ${err?.message || "Error fetching live video"}`);
+    console.log(`Live not found ${channel.name}: blocked`);
     return null;
   }
 }
